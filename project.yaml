@@ -1,0 +1,20 @@
+specVersion: 0.2.0
+name: parallel-bridge-subql
+version: 1.0.0
+description: ''
+repository: 'https://github.com/parallel-finance/parallel-bridge-subql'
+schema:
+  file: ./schema.graphql
+network:
+  genesisHash: ''
+  endpoint: 'wss://regnet2-rpc.parallel.fi'
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 1
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleEvent
+          kind: substrate/EventHandler
+          filter:
+            module: bridge

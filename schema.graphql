@@ -1,0 +1,75 @@
+type RegisteredChains @entity {
+  id: ID!
+  
+  isValid: Boolean!
+  bridgeOutNonce: Int!
+  bridgeOutTotalAmount: String!
+  bridgeInNonce: Int!
+  bridgeInTotalAmount: String!
+
+  hash: String!
+  blockHeight: Int!
+  timestamp: Date!
+}
+
+type RegisteredBridgeTokens @entity {
+  id: ID!
+  
+  isValid: Boolean!
+  assetId: Int!
+  bridgeOutNonce: Int!
+  bridgeOutTotalAmount: String!
+  bridgeInNonce: Int!
+  bridgeInTotalAmount: String!
+
+  hash: String!
+  blockHeight: Int!
+  timestamp: Date!
+}
+
+type BridgeOut @entity {
+  id: ID!
+
+  isValid: Boolean!
+  destChainId: Int!
+  chainNonce: Int!
+  bridgeTokenId: Int!
+  receiver: String!
+  amount: String!
+  fee: String!
+
+  hash: String!
+  blockHeight: Int! @index
+  timestamp: Date!
+}
+
+type BridgeIn @entity {
+  id: ID!
+  
+  isValid: Boolean!
+  sourceChainId: Int!
+  chainNonce: Int!
+  bridgeTokenId: Int!
+  receiver: String!
+  amount: String!
+  voteFor: Int!
+  voteAgainst: Int!
+  proposalStatus: String!
+
+  hash: String!
+  blockHeight: Int! @index
+  timestamp: Date!
+}
+
+type Votes @entity {
+  id: ID!
+  
+  sourceChainId: Int!
+  chainNonce: Int!
+  voter: String!
+  favor: Boolean!
+
+  hash: String!
+  blockHeight: Int! @index
+  timestamp: Date!
+}
