@@ -11,9 +11,9 @@ export const handleChainRegistered = async ({
     const chainRecord = RegisteredChains.create({
         id: chainId.toString(),
         isValid: true,
-        bridgeOutNonce: 0,
+        bridgeOutCount: 0,
         bridgeOutTotalAmount: '0',
-        bridgeInNonce: 0,
+        bridgeInCount: 0,
         bridgeInTotalAmount: '0',
         hash: hash.toString(),
         blockHeight: header.number.toNumber(),
@@ -52,12 +52,12 @@ export const updateChainSummary = async (chainId: string, amount: string, bridge
     let chainRecord = await RegisteredChains.get(chainId)
     if (chainRecord) {
         if (bridgeType === BridgeType.BridgeOut) {
-            chainRecord.bridgeOutNonce += 1
+            chainRecord.bridgeOutCount += 1
             chainRecord.bridgeOutTotalAmount = (
                 BigInt(chainRecord.bridgeOutTotalAmount) + BigInt(amount)
             ).toString()
         } else if (bridgeType === BridgeType.BridgeIn) {
-            chainRecord.bridgeInNonce += 1
+            chainRecord.bridgeInCount += 1
             chainRecord.bridgeInTotalAmount = (
                 BigInt(chainRecord.bridgeInTotalAmount) + BigInt(amount)
             ).toString()

@@ -10,7 +10,12 @@ export const handleBridgeTokenRegistered = async ({
     const [assetId, bridgeTokenId] = JSON.parse(data.toString()) as [number, number]
     const bridgeTokenRecord = RegisteredBridgeTokens.create({
         id: bridgeTokenId.toString(),
+        isValid: true,
         assetId,
+        bridgeOutCount: 0,
+        bridgeOutTotalAmount: '0',
+        bridgeInCount: 0,
+        bridgeInTotalAmount: '0',
         hash: hash.toString(),
         blockHeight: header.number.toNumber(),
         timestamp,
@@ -29,26 +34,31 @@ export const handleBridgeTokenRemoved = async ({
     block: { block: { header } }
 }: SubstrateEvent) => {
     const [bridgeTokenId] = JSON.parse(data.toString()) as [number, number]
+    let bridgeTokenRecord = await RegisteredBridgeTokens.get(bridgeTokenId.toString())
+    if (bridgeTokenRecord) {
+        bridgeTokenRecord.isValid = false
+    } else {
+        logger.error(`Cannot update the brigeToken which is not found: ${bridgeTokenId}`)
+    }
 
     try {
-        await RegisteredBridgeTokens.remove(bridgeTokenId.toString())
+        await bridgeTokenRecord.save()
         logger.info(`#${header.number.toNumber()} handle BridgeTokenRemoved: ${bridgeTokenId}`)
     } catch (error) {
         logger.error('handle BridgeTokenRemoved error: ', error)
     }
 }
 
-
 export const updateBridgeTokenSummary = async (bridgeTokenId: string, amount: string, bridgeType: BridgeType) => {
     let bridgeTokenRecord = await RegisteredBridgeTokens.get(bridgeTokenId)
     if (bridgeTokenRecord) {
         if (bridgeType === BridgeType.BridgeOut) {
-            bridgeTokenRecord.bridgeOutNonce += 1
+            bridgeTokenRecord.bridgeOutCount += 1
             bridgeTokenRecord.bridgeOutTotalAmount = (
                 BigInt(bridgeTokenRecord.bridgeOutTotalAmount) + BigInt(amount)
             ).toString()
         } else if (bridgeType === BridgeType.BridgeIn) {
-            bridgeTokenRecord.bridgeInNonce += 1
+            bridgeTokenRecord.bridgeInCount += 1
             bridgeTokenRecord.bridgeInTotalAmount = (
                 BigInt(bridgeTokenRecord.bridgeInTotalAmount) + BigInt(amount)
             ).toString()
