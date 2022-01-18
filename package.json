@@ -10,7 +10,8 @@
         "codegen": "./node_modules/.bin/subql codegen",
         "format": "prettier --config .prettierrc.json 'src/**/*.ts' --write",
         "docker-compose": "docker-compose pull && docker-compose up",
-        "launch": "rm -rf .data && yarn codegen && yarn build && yarn docker-compose"
+        "launch-dev": "rm -rf .data && yarn codegen && yarn build && yarn docker-compose",
+        "shutdown-dev": "docker-compose down"
     },
     "homepage": "https://github.com/subquery/subql-starter",
     "repository": "github:subquery/subql-starter",
