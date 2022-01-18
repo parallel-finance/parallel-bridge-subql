@@ -2,9 +2,9 @@ type RegisteredChains @entity {
   id: ID!
   
   isValid: Boolean!
-  bridgeOutNonce: Int!
+  bridgeOutCount: Int!
   bridgeOutTotalAmount: String!
-  bridgeInNonce: Int!
+  bridgeInCount: Int!
   bridgeInTotalAmount: String!
 
   hash: String!
@@ -17,9 +17,9 @@ type RegisteredBridgeTokens @entity {
   
   isValid: Boolean!
   assetId: Int!
-  bridgeOutNonce: Int!
+  bridgeOutCount: Int!
   bridgeOutTotalAmount: String!
-  bridgeInNonce: Int!
+  bridgeInCount: Int!
   bridgeInTotalAmount: String!
 
   hash: String!
@@ -34,7 +34,7 @@ type BridgeOut @entity {
   destChainId: Int!
   chainNonce: Int!
   bridgeTokenId: Int!
-  receiver: String!
+  dstAddress: String!
   amount: String!
   fee: String!
 
@@ -50,7 +50,7 @@ type BridgeIn @entity {
   sourceChainId: Int!
   chainNonce: Int!
   bridgeTokenId: Int!
-  receiver: String!
+  dstAddress: String!
   amount: String!
   voteFor: Int!
   voteAgainst: Int!
