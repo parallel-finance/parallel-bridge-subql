@@ -14,7 +14,7 @@ export const handleVoteFor = async ({
     ) as [number, number, string, number, string, string]
 
     let voteRecord = Votes.create({
-        id: aggregateIntoId(sourceId.toString(), sourceNonce.toString()),
+        id: aggregateIntoId(sourceId.toString(), sourceNonce.toString(), voter),
         sourceChainId: sourceId,
         chainNonce: sourceNonce,
         voter: useAnyChainAddress(voter),
@@ -29,14 +29,13 @@ export const handleVoteFor = async ({
 
     try {
         await voteRecord.save()
-
-        await updateProposal(aggregateIntoId(sourceId.toString(), sourceNonce.toString()), true)
+        const proposal = aggregateIntoId(sourceId.toString(), sourceNonce.toString(), voter)
+        await updateProposal(proposal, true)
         logger.info(`#${header.number.toNumber()} handle VoteFor ${JSON.stringify(voteRecord)}`)
     } catch (error) {
         logger.error('handle VoteFor error: ', error)
     }
 }
-
 
 export const handleVoteAgainst = async ({
     event: { data },
@@ -48,7 +47,7 @@ export const handleVoteAgainst = async ({
     ) as [number, number, string, number, string, string]
 
     let voteRecord = Votes.create({
-        id: aggregateIntoId(sourceId.toString(), sourceNonce.toString()),
+        id: aggregateIntoId(sourceId.toString(), sourceNonce.toString(), voter),
         sourceChainId: sourceId,
         chainNonce: sourceNonce,
         voter: useAnyChainAddress(voter),
@@ -63,7 +62,8 @@ export const handleVoteAgainst = async ({
 
     try {
         await voteRecord.save()
-        await updateProposal(aggregateIntoId(sourceId.toString(), sourceNonce.toString()), false)
+        const proposal = aggregateIntoId(sourceId.toString(), sourceNonce.toString(), voter)
+        await updateProposal(proposal, false)
         logger.info(`#${header.number.toNumber()} handle VoteFor ${JSON.stringify(voteRecord)}`)
     } catch (error) {
         logger.error('handle VoteFor error: ', error)

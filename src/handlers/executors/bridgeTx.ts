@@ -6,8 +6,8 @@ import { BridgeType, ProposalStatus } from '../utils/types'
 import { updateBridgeTokenSummary } from './bridgeToken'
 import { ensureStrNumber } from '../utils/decimal'
 
-export function aggregateIntoId(chainId: string, chainNonce: string) {
-  return chainId + '-' + chainNonce
+export function aggregateIntoId(chainId: string, chainNonce: string, account: string) {
+  return chainId + '-' + chainNonce + '-' + useAnyChainAddress(account)
 }
 
 export const handleTeleportBurned = async ({
@@ -20,7 +20,7 @@ export const handleTeleportBurned = async ({
   ) as [string, number, number, number, string, string, string]
 
   const bridgeOutRecord = BridgeOut.create({
-    id: aggregateIntoId(destId.toString(), chainNonce.toString()),
+    id: aggregateIntoId(destId.toString(), chainNonce.toString(), oriAddress),
     isValid: true,
     oriAddress: useAnyChainAddress(oriAddress),
     destChainId: destId,
@@ -51,17 +51,17 @@ export const handleMaterializeInitialized = async ({
   block: { timestamp, block: { header } },
   extrinsic: { extrinsic: { hash } }
 }: SubstrateEvent) => {
-  const [_voter, sourceId, sourceNonce, bridgeTokenId, receiver, amount] = JSON.parse(
+  const [voter, sourceId, sourceNonce, bridgeTokenId, dstAddress, amount] = JSON.parse(
     data.toString()
   ) as [string, number, number, number, string, string]
 
   const bridgeInRecord = BridgeIn.create({
-    id: aggregateIntoId(sourceId.toString(), sourceNonce.toString()),
+    id: aggregateIntoId(sourceId.toString(), sourceNonce.toString(), voter),
     isValid: false,
     sourceChainId: sourceId,
     chainNonce: sourceNonce,
     bridgeTokenId,
-    dstAddress: useAnyChainAddress(receiver),
+    dstAddress: useAnyChainAddress(dstAddress),
     amount: ensureStrNumber(amount),
     voteFor: 0,
     voteAgainst: 0,
@@ -83,11 +83,11 @@ export const handleMaterializeMinted = async ({
   event: { data },
   block: { block: { header } }
 }: SubstrateEvent) => {
-  const [sourceId, sourceNonce, bridgeTokenId, _dstAddress, amount] = JSON.parse(
+  const [sourceId, sourceNonce, bridgeTokenId, dstAddress, amount] = JSON.parse(
     data.toString()
-  ) as [number, number, string, number, string, string]
+  ) as [number, number, number, string, string]
 
-  const bridgeInId = aggregateIntoId(sourceId.toString(), sourceNonce.toString())
+  const bridgeInId = aggregateIntoId(sourceId.toString(), sourceNonce.toString(), dstAddress)
   let bridgeInRecord = await BridgeIn.get(bridgeInId)
   if (bridgeInRecord) {
     bridgeInRecord.isValid = true
@@ -108,7 +108,6 @@ export const handleMaterializeMinted = async ({
     logger.error('handle MaterializeMinted error: ', error)
   }
 }
-
 
 export const updateProposal = async (proposal: string, favor: boolean) => {
   let bridgeInRecord = await BridgeIn.get(proposal)
