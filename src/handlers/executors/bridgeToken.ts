@@ -1,5 +1,6 @@
 import { SubstrateEvent } from '@subql/types'
 import { RegisteredBridgeTokens } from '../../types'
+import { ensureStrNumber } from '../utils/decimal'
 import { BridgeType } from '../utils/types'
 
 export const handleBridgeTokenRegistered = async ({
@@ -7,11 +8,13 @@ export const handleBridgeTokenRegistered = async ({
     block: { timestamp, block: { header } },
     extrinsic: { extrinsic: { hash } }
 }: SubstrateEvent) => {
-    const [assetId, bridgeTokenId] = JSON.parse(data.toString()) as [number, number]
+    const [assetId, bridgeTokenId, external, fee] =
+        JSON.parse(data.toString()) as [number, number, boolean, string]
     const bridgeTokenRecord = RegisteredBridgeTokens.create({
         id: bridgeTokenId.toString(),
-        isValid: true,
         assetId,
+        external,
+        fee: ensureStrNumber(fee),
         bridgeOutCount: 0,
         bridgeOutTotalAmount: '0',
         bridgeInCount: 0,
@@ -33,16 +36,10 @@ export const handleBridgeTokenRemoved = async ({
     event: { data },
     block: { block: { header } }
 }: SubstrateEvent) => {
-    const [bridgeTokenId] = JSON.parse(data.toString()) as [number, number]
-    let bridgeTokenRecord = await RegisteredBridgeTokens.get(bridgeTokenId.toString())
-    if (bridgeTokenRecord) {
-        bridgeTokenRecord.isValid = false
-    } else {
-        logger.error(`Cannot update the brigeToken which is not found: ${bridgeTokenId}`)
-    }
+    const [_assetId, bridgeTokenId] = JSON.parse(data.toString()) as [number, number]
 
     try {
-        await bridgeTokenRecord.save()
+        await RegisteredBridgeTokens.remove(bridgeTokenId.toString())
         logger.info(`#${header.number.toNumber()} handle BridgeTokenRemoved: ${bridgeTokenId}`)
     } catch (error) {
         logger.error('handle BridgeTokenRemoved error: ', error)
@@ -54,14 +51,14 @@ export const updateBridgeTokenSummary = async (bridgeTokenId: string, amount: st
     if (bridgeTokenRecord) {
         if (bridgeType === BridgeType.BridgeOut) {
             bridgeTokenRecord.bridgeOutCount += 1
-            bridgeTokenRecord.bridgeOutTotalAmount = (
+            bridgeTokenRecord.bridgeOutTotalAmount = ensureStrNumber((
                 BigInt(bridgeTokenRecord.bridgeOutTotalAmount) + BigInt(amount)
-            ).toString()
+            ).toString())
         } else if (bridgeType === BridgeType.BridgeIn) {
             bridgeTokenRecord.bridgeInCount += 1
-            bridgeTokenRecord.bridgeInTotalAmount = (
+            bridgeTokenRecord.bridgeInTotalAmount = ensureStrNumber((
                 BigInt(bridgeTokenRecord.bridgeInTotalAmount) + BigInt(amount)
-            ).toString()
+            ).toString())
         }
 
         logger.info(`update BridgeTokenSummary: ${JSON.stringify(bridgeTokenRecord)}`)

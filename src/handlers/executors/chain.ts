@@ -1,5 +1,6 @@
 import { SubstrateEvent } from '@subql/types'
 import { RegisteredChains } from '../../types'
+import { ensureStrNumber } from '../utils/decimal'
 import { BridgeType } from '../utils/types'
 
 export const handleChainRegistered = async ({
@@ -10,7 +11,6 @@ export const handleChainRegistered = async ({
     const [chainId] = JSON.parse(data.toString()) as [number]
     const chainRecord = RegisteredChains.create({
         id: chainId.toString(),
-        isValid: true,
         bridgeOutCount: 0,
         bridgeOutTotalAmount: '0',
         bridgeInCount: 0,
@@ -33,12 +33,6 @@ export const handleChainRemoved = async ({
     block: { block: { header } }
 }: SubstrateEvent) => {
     const [chainId] = JSON.parse(data.toString()) as [number]
-    let chainRecord = await RegisteredChains.get(chainId.toString())
-    if (chainRecord) {
-        chainRecord.isValid = false
-    } else {
-        logger.error(`Cannot update the chain which is not found: ${chainId}`)
-    }
 
     try {
         await RegisteredChains.remove(chainId.toString())
@@ -53,14 +47,14 @@ export const updateChainSummary = async (chainId: string, amount: string, bridge
     if (chainRecord) {
         if (bridgeType === BridgeType.BridgeOut) {
             chainRecord.bridgeOutCount += 1
-            chainRecord.bridgeOutTotalAmount = (
+            chainRecord.bridgeOutTotalAmount = ensureStrNumber((
                 BigInt(chainRecord.bridgeOutTotalAmount) + BigInt(amount)
-            ).toString()
+            ).toString())
         } else if (bridgeType === BridgeType.BridgeIn) {
             chainRecord.bridgeInCount += 1
-            chainRecord.bridgeInTotalAmount = (
+            chainRecord.bridgeInTotalAmount = ensureStrNumber((
                 BigInt(chainRecord.bridgeInTotalAmount) + BigInt(amount)
-            ).toString()
+            ).toString())
         }
 
         logger.info(`update ChainSummary: ${JSON.stringify(chainRecord)}`)

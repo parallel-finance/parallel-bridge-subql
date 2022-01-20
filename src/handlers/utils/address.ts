@@ -1,7 +1,7 @@
 import { encodeAddress } from '@polkadot/util-crypto';
 
 export const anyChainSs58Prefix = 42
-export function convertToAnyChainAddress(address: string): string {
+export function useAnyChainAddress(address: string): string {
   return convertToSS58(address, anyChainSs58Prefix);
 }
 
