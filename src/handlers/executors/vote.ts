@@ -1,5 +1,7 @@
 import { SubstrateEvent } from '@subql/types'
 import { Votes } from '../../types'
+import { useAnyChainAddress } from '../utils/address'
+import { ensureStrNumber } from '../utils/decimal'
 import { aggregateIntoId, updateProposal } from './bridgeTx'
 
 export const handleVoteFor = async ({
@@ -7,15 +9,18 @@ export const handleVoteFor = async ({
     block: { timestamp, block: { header } },
     extrinsic: { extrinsic: { hash } }
 }: SubstrateEvent) => {
-    const [sourceId, sourceNonce, voter] = JSON.parse(
+    const [sourceId, sourceNonce, voter, bridgeTokenId, dstAddress, amount] = JSON.parse(
         data.toString()
-    ) as [number, number, string]
+    ) as [number, number, string, number, string, string]
 
     let voteRecord = Votes.create({
         id: aggregateIntoId(sourceId.toString(), sourceNonce.toString()),
         sourceChainId: sourceId,
         chainNonce: sourceNonce,
-        voter,
+        voter: useAnyChainAddress(voter),
+        bridgeTokenId,
+        dstAddress: useAnyChainAddress(dstAddress),
+        amount: ensureStrNumber(amount),
         favor: true,
         hash: hash.toString(),
         blockHeight: header.number.toNumber(),
@@ -38,15 +43,18 @@ export const handleVoteAgainst = async ({
     block: { timestamp, block: { header } },
     extrinsic: { extrinsic: { hash } }
 }: SubstrateEvent) => {
-    const [sourceId, sourceNonce, voter] = JSON.parse(
+    const [sourceId, sourceNonce, voter, bridgeTokenId, dstAddress, amount] = JSON.parse(
         data.toString()
-    ) as [number, number, string]
+    ) as [number, number, string, number, string, string]
 
     let voteRecord = Votes.create({
         id: aggregateIntoId(sourceId.toString(), sourceNonce.toString()),
         sourceChainId: sourceId,
         chainNonce: sourceNonce,
-        voter,
+        voter: useAnyChainAddress(voter),
+        bridgeTokenId,
+        dstAddress: useAnyChainAddress(dstAddress),
+        amount: ensureStrNumber(amount),
         favor: false,
         hash: hash.toString(),
         blockHeight: header.number.toNumber(),

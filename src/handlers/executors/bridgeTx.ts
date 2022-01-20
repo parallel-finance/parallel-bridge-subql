@@ -1,9 +1,10 @@
 import { SubstrateEvent } from '@subql/types'
 import { BridgeIn, BridgeOut } from '../../types'
-import { convertToAnyChainAddress } from '../utils/address'
+import { useAnyChainAddress } from '../utils/address'
 import { updateChainSummary } from './chain'
 import { BridgeType, ProposalStatus } from '../utils/types'
 import { updateBridgeTokenSummary } from './bridgeToken'
+import { ensureStrNumber } from '../utils/decimal'
 
 export function aggregateIntoId(chainId: string, chainNonce: string) {
   return chainId + '-' + chainNonce
@@ -14,19 +15,20 @@ export const handleTeleportBurned = async ({
   block: { timestamp, block: { header } },
   extrinsic: { extrinsic: { hash } }
 }: SubstrateEvent) => {
-  const [destId, chainNonce, bridgeTokenId, receiver, amount, fee] = JSON.parse(
+  const [oriAddress, destId, chainNonce, bridgeTokenId, dstAddress, amount, fee] = JSON.parse(
     data.toString()
-  ) as [number, number, number, string, string, string]
+  ) as [string, number, number, number, string, string, string]
 
   const bridgeOutRecord = BridgeOut.create({
     id: aggregateIntoId(destId.toString(), chainNonce.toString()),
     isValid: true,
+    oriAddress: useAnyChainAddress(oriAddress),
     destChainId: destId,
     chainNonce,
     bridgeTokenId,
-    dstAddress: receiver,
-    amount,
-    fee,
+    dstAddress: useAnyChainAddress(dstAddress),
+    amount: ensureStrNumber(amount),
+    fee: ensureStrNumber(fee),
     hash: hash.toString(),
     blockHeight: header.number.toNumber(),
     timestamp: timestamp
@@ -49,9 +51,9 @@ export const handleMaterializeInitialized = async ({
   block: { timestamp, block: { header } },
   extrinsic: { extrinsic: { hash } }
 }: SubstrateEvent) => {
-  const [sourceId, sourceNonce, voter, bridgeTokenId, receiver, amount] = JSON.parse(
+  const [_voter, sourceId, sourceNonce, bridgeTokenId, receiver, amount] = JSON.parse(
     data.toString()
-  ) as [number, number, string, number, string, string]
+  ) as [string, number, number, number, string, string]
 
   const bridgeInRecord = BridgeIn.create({
     id: aggregateIntoId(sourceId.toString(), sourceNonce.toString()),
@@ -59,8 +61,8 @@ export const handleMaterializeInitialized = async ({
     sourceChainId: sourceId,
     chainNonce: sourceNonce,
     bridgeTokenId,
-    dstAddress: convertToAnyChainAddress(receiver),
-    amount,
+    dstAddress: useAnyChainAddress(receiver),
+    amount: ensureStrNumber(amount),
     voteFor: 0,
     voteAgainst: 0,
     proposalStatus: ProposalStatus.Initiated.valueOf(),
@@ -81,7 +83,7 @@ export const handleMaterializeMinted = async ({
   event: { data },
   block: { block: { header } }
 }: SubstrateEvent) => {
-  const [sourceId, sourceNonce, bridgeTokenId, receiver, amount] = JSON.parse(
+  const [sourceId, sourceNonce, bridgeTokenId, _dstAddress, amount] = JSON.parse(
     data.toString()
   ) as [number, number, string, number, string, string]
 

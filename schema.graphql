@@ -1,7 +1,6 @@
 type RegisteredChains @entity {
   id: ID!
-  
-  isValid: Boolean!
+
   bridgeOutCount: Int!
   bridgeOutTotalAmount: String!
   bridgeInCount: Int!
@@ -15,8 +14,9 @@ type RegisteredChains @entity {
 type RegisteredBridgeTokens @entity {
   id: ID!
   
-  isValid: Boolean!
   assetId: Int!
+  external: Boolean!
+  fee: String!
   bridgeOutCount: Int!
   bridgeOutTotalAmount: String!
   bridgeInCount: Int!
@@ -31,6 +31,7 @@ type BridgeOut @entity {
   id: ID!
 
   isValid: Boolean!
+  oriAddress: String!
   destChainId: Int!
   chainNonce: Int!
   bridgeTokenId: Int!
@@ -67,6 +68,9 @@ type Votes @entity {
   sourceChainId: Int!
   chainNonce: Int!
   voter: String!
+  bridgeTokenId: Int!
+  dstAddress: String!
+  amount: String!
   favor: Boolean!
 
   hash: String!
