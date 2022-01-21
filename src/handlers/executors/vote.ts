@@ -29,7 +29,7 @@ export const handleVoteFor = async ({
 
     try {
         await voteRecord.save()
-        const proposal = aggregateIntoId(sourceId.toString(), sourceNonce.toString(), voter)
+        const proposal = aggregateIntoId(sourceId.toString(), sourceNonce.toString(), dstAddress)
         await updateProposal(proposal, true)
         logger.info(`#${header.number.toNumber()} handle VoteFor ${JSON.stringify(voteRecord)}`)
     } catch (error) {
@@ -62,7 +62,7 @@ export const handleVoteAgainst = async ({
 
     try {
         await voteRecord.save()
-        const proposal = aggregateIntoId(sourceId.toString(), sourceNonce.toString(), voter)
+        const proposal = aggregateIntoId(sourceId.toString(), sourceNonce.toString(), dstAddress)
         await updateProposal(proposal, false)
         logger.info(`#${header.number.toNumber()} handle VoteFor ${JSON.stringify(voteRecord)}`)
     } catch (error) {
