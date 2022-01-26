@@ -26,7 +26,7 @@ export const handleTeleportBurned = async ({
     destChainId: destId,
     chainNonce,
     bridgeTokenId,
-    dstAddress: useAnyChainAddress(dstAddress),
+    dstAddress,
     amount: ensureStrNumber(amount),
     fee: ensureStrNumber(fee),
     hash: hash.toString(),
