@@ -68,6 +68,7 @@ export const handleMaterializeInitialized = async ({
     proposalStatus: ProposalStatus.Initiated.valueOf(),
     hash: hash.toString(),
     blockHeight: header.number.toNumber(),
+    executedBlockHeight: null,
     timestamp: timestamp
   })
   logger.info(`handle MaterializeInitialized ${JSON.stringify(bridgeInRecord)}`)
@@ -92,6 +93,7 @@ export const handleMaterializeMinted = async ({
   if (bridgeInRecord) {
     bridgeInRecord.isValid = true
     bridgeInRecord.proposalStatus = ProposalStatus.Approved.valueOf()
+    bridgeInRecord.executedBlockHeight = header.number.toNumber()
   } else {
     logger.error(`Cannot update the bridgeToken which is not found: ${bridgeInId}`)
   }

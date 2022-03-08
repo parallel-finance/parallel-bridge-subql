@@ -59,6 +59,7 @@ type BridgeIn @entity {
 
   hash: String!
   blockHeight: Int! @index
+  executedBlockHeight: Int
   timestamp: Date!
 }
 
