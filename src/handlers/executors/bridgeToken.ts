@@ -8,13 +8,18 @@ export const handleBridgeTokenRegistered = async ({
     block: { timestamp, block: { header } },
     extrinsic: { extrinsic: { hash } }
 }: SubstrateEvent) => {
-    const [assetId, bridgeTokenId, external, fee] =
-        JSON.parse(data.toString()) as [number, number, boolean, string]
+    const [assetId, bridgeTokenId, external, fee, enable, outCap, outAmount, inCap, inAmount] =
+        JSON.parse(data.toString()) as [number, number, boolean, string, boolean, string, string, string, string]
     const bridgeTokenRecord = RegisteredBridgeTokens.create({
         id: bridgeTokenId.toString(),
         assetId,
         external,
         fee: ensureStrNumber(fee),
+        enable,
+        outCap,
+        outAmount,
+        inCap,
+        inAmount,
         bridgeOutCount: 0,
         bridgeOutTotalAmount: '0',
         bridgeInCount: 0,
