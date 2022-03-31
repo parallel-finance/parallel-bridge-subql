@@ -1,6 +1,6 @@
 import { SubstrateEvent } from '@subql/types'
 import { handleChainRegistered, handleChainRemoved } from './chain'
-import { handleBridgeTokenRegistered, handleBridgeTokenRemoved } from './bridgeToken'
+import { handleBridgeTokenAccumulatedValueCleaned, handleBridgeTokenCapUpdated, handleBridgeTokenFeeUpdated, handleBridgeTokenRegistered, handleBridgeTokenRemoved, handleBridgeTokenStatusUpdated } from './bridgeToken'
 import { handleMaterializeInitialized, handleMaterializeMinted, handleTeleportBurned } from './bridgeTx'
 import { handleVoteAgainst as handleMaterializeVoteAgainst, handleVoteFor as handleMaterializeVoteFor } from './vote'
 
@@ -11,6 +11,10 @@ export const BRIDGE_EXECUTORS: { [method: string]: Executor } = {
   ['ChainRemoved']: handleChainRemoved,
   ['BridgeTokenRegistered']: handleBridgeTokenRegistered,
   ['BridgeTokenRemoved']: handleBridgeTokenRemoved,
+  ['BridgeTokenFeeUpdated']: handleBridgeTokenFeeUpdated,
+  ['BridgeTokenStatusUpdated']: handleBridgeTokenStatusUpdated,
+  ['BridgeTokenCapUpdated']: handleBridgeTokenCapUpdated,
+  ['BridgeTokenAccumulatedValueCleaned']: handleBridgeTokenAccumulatedValueCleaned,
   ['TeleportBurned']: handleTeleportBurned,
   ['MaterializeInitialized']: handleMaterializeInitialized,
   ['MaterializeMinted']: handleMaterializeMinted,

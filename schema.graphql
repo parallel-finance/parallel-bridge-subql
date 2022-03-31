@@ -17,6 +17,12 @@ type RegisteredBridgeTokens @entity {
   assetId: Int!
   external: Boolean!
   fee: String!
+  enable: Boolean!
+  outCap: String!
+  outAmount: String!
+  inCap: String!
+  inAmount: String!
+
   bridgeOutCount: Int!
   bridgeOutTotalAmount: String!
   bridgeInCount: Int!
