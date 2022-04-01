@@ -141,10 +141,16 @@ export const updateBridgeTokenSummary = async (bridgeTokenId: string, amount: st
             bridgeTokenRecord.bridgeOutTotalAmount = ensureStrNumber((
                 BigInt(bridgeTokenRecord.bridgeOutTotalAmount) + BigInt(amount)
             ).toString())
+            bridgeTokenRecord.outAmount = ensureStrNumber((
+                BigInt(bridgeTokenRecord.outAmount) + BigInt(amount)
+            ).toString())
         } else if (bridgeType === BridgeType.BridgeIn) {
             bridgeTokenRecord.bridgeInCount += 1
             bridgeTokenRecord.bridgeInTotalAmount = ensureStrNumber((
                 BigInt(bridgeTokenRecord.bridgeInTotalAmount) + BigInt(amount)
+            ).toString())
+            bridgeTokenRecord.inAmount = ensureStrNumber((
+                BigInt(bridgeTokenRecord.inAmount) + BigInt(amount)
             ).toString())
         }
 

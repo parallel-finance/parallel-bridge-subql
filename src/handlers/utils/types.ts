@@ -1,10 +1,10 @@
 export enum BridgeType {
-    BridgeIn = 1,
-    BridgeOut = 2
+    BridgeIn = "BridgeIn",
+    BridgeOut = "BridgeOut",
 }
 
 export enum ProposalStatus {
-    Initiated = "Initiated",
+    Initiated = "Initialized",
     Voting = "Voting",
     Approved = "Approved",
     Rejected = "Rejected",
