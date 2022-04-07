@@ -24,8 +24,8 @@
     "license": "MIT",
     "devDependencies": {
         "@polkadot/api": "^7",
-        "@subql/cli": "0.24.0",
-        "@subql/types": "0.14.0",
+        "@subql/cli": "latest",
+        "@subql/types": "lastest",
         "@typescript-eslint/eslint-plugin": "^5.18.0",
         "eslint-config-prettier": "^8.5.0",
         "eslint-plugin-prettier": "^4.0.0",
