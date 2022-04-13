@@ -6,7 +6,7 @@ repository: 'https://github.com/parallel-finance/parallel-bridge-subql'
 schema:
   file: ./schema.graphql
 network:
-  genesisHash: '0x23f4eef686e7b1909f6444f674848b4c1fc2bb9b207f0628bd402f6993a402a6'
+  genesisHash: '0x41dfecbedb4cc96a63485a2c446644819549b1ff7be55a1a1c1ac3066e7e8c70'
   endpoint: 'wss://regnet-rpc.parallel.fi'
 dataSources:
   - kind: substrate/Runtime
