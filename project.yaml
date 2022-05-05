@@ -1,13 +1,21 @@
-specVersion: 0.2.0
+specVersion: 1.0.0
 name: parallel-bridge-subql
 version: 1.0.0
 description: ''
 repository: 'https://github.com/parallel-finance/parallel-bridge-subql'
+runner:
+  node:
+    name: '@subql/node'
+    version: '0.34.0'
+  query:
+    name: '@subql/query'
+    version: '^0.12.0'
 schema:
   file: ./schema.graphql
 network:
   genesisHash: '0x1a26eee67d758ca045585dcd3203d23704ce69390305d89714094858d65e8244'
   endpoint: 'wss://regnet-rpc.parallel.fi'
+  dictionary: ''
 dataSources:
   - kind: substrate/Runtime
     startBlock: 1
